@@ -1,0 +1,246 @@
+---
+title: "Gail Score Project"
+output: pdf_document
+header-includes: \usepackage{multirow}
+---
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#install.packages("ggplot2", dependencies = T)
+#install.packages("gridExtra", dependencies = T)
+library(ggplot2)
+library(gridExtra)
+#setwd("~/Desktop/FirstProject")
+Final.Dataset <- read.csv("~/Desktop/Data Science Project/Raw Files/FinalDataset.csv", header=TRUE, sep=",")
+yvonne <- read.csv("~/Desktop/Data Science Project/Raw Files/Yvonne.csv", header=TRUE, sep=",")
+cindy <- read.csv("~/Desktop/Data Science Project/Raw Files/Cindy.csv", header=TRUE, sep=",")
+confidence.interval <- read.csv("~/Desktop/Data Science Project/Raw Files/confidence.interval.csv", header=TRUE, sep=",")
+```
+  
+## Table of Contents 
+
+
+###I. Introduction
+
+
+###II. Exploratory Data Analysis
+
+
+
+###III. Methodology/Analysis
+
+
+
+###IV. Measure of Uncertainty 
+
+
+
+###V. Interpretation of Results
+
+
+
+###VI. Limitations
+
+
+
+###VII. Challenge Results
+
+
+
+###VIII. Discussion: Literature Review
+
+
+
+###IX. Works Cited
+
+
+### X. Main Packages
+\newpage
+
+### I. Introduction:
+
+ * Breast Cancer
+ 
+ Breast Cancer occurs when there is a collection of cells that grow abnormally or without control, called tumors. Breast cancer is the second most common cancer affecting women. About 231,840 cases of invasive breast cancer and 60,290 of non-invasive breast cancer were diagnosed in the United States in 2015 alone. Some of the factors that increase the risk of breast cancer are: gender, age, race, family history(4). The latest statistics of breast cancer in the United States (3) are: 
+ 
+* 1 in 8 women (about 12%) will develop breast cancer at some point in her lifetime.
+* In 2016, an estimated 246,660 new cases of invasive breast cancer are expected to be diagnosed in women in the U.S., in addition to 61,000 new cases    of non-invasive breast cancer.
+* For women in the U.S., breast cancer death rates are higher than those for any other cancer(besides lung cancer)
+* A woman’s risk of breast cancer nearly doubles if she has a first-degree relative who has been diagnosed with breast cancer
+* The most significant risk factors for breast cancer are gender (being a woman) and age (growing older).
+Given the above statistics,creating tools to assess risk level for breast cancer is primordial. The more you know, the better prepared you are to take actions that can help reduce your risk. Fortunately, the Gail Model was designed to educate women about their potential risk for breast cancer.
+
+ * Projet Overview and Goal
+ 
+    The Gail Model is a statistical breast cancer risk assessment algorithm which was developed by Dr. Mitchell Gail and his colleagues with the Biostatistics Branch of NCI’s Division of Cancer Epidemiology and Genetics. It was developed as part of a huge screening study of 280,000 women between 35 and 74 years of age. Initially, The Gail model was shown to be a reasonable tool for estimating breast cancer risk in white women, and  later on other researchers subsequently supplemented the model to provide accurate risk assessments for African, Hispanic, and Asian women (2) using data from the Contraceptive and Reproductive Experiences (CARE) Study for African american women and data from the Asian American Breast Cancer Study (AABCS) for Asian-American and Pacific Islander women
+    The Gail Model calculates a woman's risk of developing breast cancer within the next five years and within her lifetime (up to age 90 years old)(1).
+    The goal of this project is to develop a model for inferring the variables needed to calculate the Gail score for a woman based on her Facebook profile. In addition, include estimates of uncertainty in the predicted score.
+
+ * Description of Data 
+ 
+   Data being used is obtained from Facebook page sites, "IhadCancer" and "TheBreastCanceSite". The focus was to extract comments and posts from breast cancer support groups and organizations, and extract demographic information of women. The information extracted was used to estimate the Gail Score. 
+
+ * Key Variables:
+ 
+      *Age*
+       
+      *Age at time of first menstrual period* 
+       
+      *Age at time of first live birth of a child* 
+       
+      *Ethnicity*
+       
+      *Medical History*
+       
+      *Mutation in either BRCA1 or BRCA2 gene*
+       
+      *How many first degree relative have had breast cancer*
+       
+      *Breast Biopsy* 
+  
+  * Variables given facebook data:
+  
+     *Age*
+     
+     *Race*
+     
+     *Ethniciy* 
+  
+* Limitations in Data Extraction 
+   
+   The biggest hurdle was finding specific information about the Gail score. Variables such as mutation genes, medical history, breast biopsy age at time of first menstrual period were not easily available on a social media site like Facebook while some other variables were much easier to find (age, race/ethnicity, age at first birth of a child) using various R packages and the Census Bureau public data. Although all the variables were not utilized, it was sufficient to make inferences.
+
+   
+* Tools
+   
+     *Rfacebook package to access different pages
+   
+    * Diverse R packages to extract, clean and transform race, age and gender information
+   
+
+### II. Exploratory Data Analysis
+
+ * Data cleaning 
+ 
+Data Cleaning Process was consisted of separating from_name column which containts the full name of someone posting on one of our facebook pages of interest , into FirstName and LastName, recognizing and separating human names from organization names, and removing the later. Finding the gender and ethnicity of the participants using packages "wru" and "gender", using Social Security Administration to extract name frequency during a certain period time so we can estimate age of participants based on their first names, using "BCRA" package to extract the absolute risk of the Gail Score. The model used to predict the gail score of women was based of outputs generated by the "BCRA" package. 
+
+I ended up with 1,051 Women after going through data cleaning. I am considered women that are older than 35(According to the BCRAT risk was determined by averaging 0.6 probabilities to develop BC at five years in women over 35 years), but younger than 90.
+I used a limit of 90  years old since it is considered the limit of a lifetime by NIH ( National Health Institute). 
+
+### III. Methodology/Analysis
+
+ * Coefficients of Interest
+ 
+ In order to calculate the absolute risk of the Gail Score Model, a dataset was constructed containing all the required input data needed to perform risk projections, such as initial age, projection age, BrCa relative risk covariates and race. The followwing variables were missing in my final dataset but did not present an obstacle into calculating the absolute risk: number of biopsies, Age at first live birth, age at menarchy and the number of 1st degree relatives with BrCa.
+ 
+In order to account for uncertainty in age and race, a list of combinations was created. Using the range of ages from the first and third quantiles, a range of absolute risk was derived, then using a range of races and the median estimated age, another set of ranges for absolute risks was created.
+For each woman, an absolute risk was created. Attached are the figures of two women selected to demonstrate the trend.
+
+Moreover, by using the variability in both age ranges and race, we obtained an absolute risk with a projection in 5 years and a lifetime risk. Note that here in calculating the lifetime risk we fix the projection age of BrCA to 90 years, while a regular projection in 5 years is obtained by adding 5 years to the actual estimated age of an individual.
+
+All of those ranges in age and race are done by taking into account uncertainty in the absolute.
+\newpage
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+ breaks <- pretty(range(yvonne$Absolute.risk.5.years.), n = nclass.FD(yvonne$Absolute.risk.5.years.), min.n = 1)
+        bwidth <- breaks[2]-breaks[1]
+       t =  ggplot(yvonne, aes(yvonne$Absolute.risk.5.years.)) + geom_histogram(binwidth = bwidth,fill="lightblue",colour="black") +
+          #geom_density(alpha=0.5, fill="#FF6666") +
+          labs(title="Yvonne",x="Absolute risk(5 years)", y = "Density")#Overlay with transparent density plot
+         # to reset graphics device
+        
+        
+        
+        done <- pretty(range(yvonne$Lifetime.absolute.risk), n = nclass.FD(yvonne$Lifetime.absolute.risk), min.n = 1)
+        bd <- done[2]-done[1]
+        s =ggplot(yvonne, aes(Lifetime.absolute.risk)) + geom_histogram(binwidth = bd,fill="lightblue",colour="black") +
+          #geom_density(alpha=0.5, fill="#FF6666") +
+          labs(title="Yvonne",x="Absolute risk(Lifetime)", y = "Density")
+        
+       
+        
+        tr<- pretty(range(cindy$Absolute.risk.5.years.), n = nclass.FD(cindy$Absolute.risk.5.years.), min.n = 1)
+        bh <- tr[2]-tr[1]
+         v = ggplot(cindy, aes(Absolute.risk.5.years.) )+ geom_histogram(binwidth = bh,fill="lightgreen",colour="black") +
+          #geom_density(alpha=0.5, fill="#FF6666") +
+          labs(title="Cindy",x="Absolute risk(5 years)", y = "Density")
+        
+        
+        vs <- pretty(range(cindy$Lifetime.absolute.risk), n = nclass.FD(cindy$Lifetime.absolute.risk), min.n = 1)
+        gh <- vs[2]-vs[1]
+        w = ggplot(cindy, aes(Lifetime.absolute.risk)) + geom_histogram(binwidth = gh,fill="lightgreen",colour="black") +
+          #geom_density(alpha=0.5, fill="#FF6666") +
+          labs(title="Cindy",x="Absolute risk(Lifetime)", y = "Density")#Overlay with transparent density plot
+         # to reset graphics device #dev.off()
+
+                grid.arrange(t, s, v, w , ncol=2, nrow =2) 
+                
+                confidence.interval.unique = confidence.interval[!duplicated(confidence.interval[,1]),]
+                confidence.interval.head = head(confidence.interval.unique,6)
+                
+colnames( confidence.interval.head) <- c("Firstname", "Lastname", "lifetime_absolute_risk_1stquartile", 
+"lifetime_absolute_risk_median", "lifetime_absolute_risk_3rdquartile", 
+"5.years_risk_1stquartile", "5years_risk_median", 
+"5.years_risk_3rdquartile")
+```
+Figure 1: Absolute risks density for two women 
+
+### IV. Measure of Uncertainty 
+
+The measure of uncertainty is measured for age and race. For race, using the package "gender", we have a range of probabilities for being white, hispanic and black. Those probabilities were used to estimate uncertainty.
+For age, we estimate the 1st quartile, median and third quartile and estimate the variability of the obsolute risk based on the variability of age.
+I came up with an estimated age and an estimated uncertainty. Then the risk was estimated as the range of risks corresponding to the range of ages that are plausible from the estimate of the age. By finding an estimate of age, I derived an estimate of confidence interval for the age. Then evaluated the range of potential risks for the range of potential ages.
+Note that the actual gail score is obtained by estimation, therefore the range of absolute risks of a woman has been based on her estimated age and race.
+
+Firstname| Lastname|Life.1stQ |Life.Median | Life.3rdQ |5yearsRisk.1stQ |5yearsRisk.Median | 5yearsRisk.3rdQ
+------------- | ------------- | ------------- | ------------- | ------------- | ------------- | --------------------|-----------------|--------------|
+Alice| Byrant| `r confidence.interval.head[1,3]`| `r confidence.interval.head[1,4]`| `r confidence.interval.head[1,5]`| `r confidence.interval.head[1,6]` | `r confidence.interval.head[1,7]` | `r confidence.interval.head[1,8]` |
+Alyce| Johnson | `r confidence.interval.head[2,3]` |`r confidence.interval.head[2,4]`| `r confidence.interval.head[2,5]`| `r confidence.interval.head[2,6]` | `r confidence.interval.head[2,7]` | `r confidence.interval.head[2,8]` |
+Anita| Guillotel | `r confidence.interval.head[3,3]` |`r confidence.interval.head[3,4]`| `r confidence.interval.head[3,5]`| `r confidence.interval.head[3,6]` | `r confidence.interval.head[3,7]` | `r confidence.interval.head[3,8]` |
+Ann  | Hutchinson | `r  confidence.interval.head[4,3]`|`r confidence.interval.head[4,4] `| `r  confidence.interval.head[4,5]`| `r confidence.interval.head[4,6]` | `r confidence.interval.head[4,7]` | `r  confidence.interval.head[4,8]` |
+
+Figure 2: Table confidence interval of absolute risk of these two subjects: Life.1qrt represent first quartile of absolute risk given combination of possible ranges and ages, while 5yearsRisk.1stQ is for 5 year projection first quartile of absolute risk given combination of possible ranges and ages
+
+\newpage
+
+### V. Interpretation of Results
+
+ * Summary
+ 
+For a given woman, her absolute risk increased based on her age and race as seen in the following figures.
+According to the Susan Komen wepage,a Foundation dedicated to education and research about causes, treatment, and the search for breast cancer cure, women with a 5-year risk of 1.67 percent or higher are classified as "high-risk."
+
+### VI. Limitations
+
+Finding medical history has been challenging, as filtering based on key words can mislead especially for large datasets.
+I therefore decided to ignore some variables and made the necessary adjustment when estimating the Gail Score.
+Another limitation has been based on age, I am calculating the age based on Social Security Administration based data, of names frequency. The biggest issue here is that we are estimating the age, therefore lacking precision.
+In addition, there is a limitation in estimating race, as I estimated race based solely on surnames, which leaves room for errors and uncertainty.
+
+### VII. Challenge Results
+
+Although the tool can estimate your risk, it cannot tell whether or not you will get breast cancer.
+Threrefore it should be used with precaution. 
+
+### VIII. Discussion
+
+It would be useful if women between 35 and 90 utilized the information provided by the Gail Score so that they can take the appropriate measure to prevent having the disease. Even tough the model doesn't tell a person if they will get breast cancer it calculates the risk. Knowing that a person has a high risk to have cancer due to family history or their age, it can motivate them to do screening more frequently.
+
+#### IX. Works Cited
+1. Breast Cancer Risk Calculations: The Gail Model. http://breast-cancer.ca/riskytools/
+2. Breast Cancer Risk Assessment Tool. https://www.cancer.gov/bcrisktool/about-tool.aspx. National Cancer Institute
+3. The Breast Cancer.org.http://www.breastcancer.org/symptoms/understand_bc/statistics
+4. Oncolink.https://www.oncolink.org/cancers/breast/all-about-breast-cancer#what-is-breast
+5. Susan G. Komen. http://ww5.komen.org/BreastCancer/GailAssessmentModel.html
+6. Stackoverflow. various tutorials
+
+##### X. Main Packages
+1. wru. https://cran.r-project.org/web/packages/wru/wru.pdf
+2. Gender.https://cran.r-project.org/web/packages/gender/gender.pdf
+3. BCRA. https://cran.r-project.org/web/packages/BCRA/BCRA.pdf
+4. RFacebook. https://cran.r-project.org/web/packages/Rfacebook/Rfacebook.pdf
+5. tm. https://cran.r-project.org/web/packages/tm/tm.pdf
+6. Parallel. //http://gforge.se/2015/02/how-to-go-parallel-in-r-basics-tips/
+7. Cluster. //https://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/
+
+#####Special Thanks
+Thanks to fellow classmate Prosenjit Kundu for his insights. Our discussions were very valuable.
